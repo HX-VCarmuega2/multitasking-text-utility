@@ -14,6 +14,8 @@ client = create_cliente()
 
 system_prompt = load_prompt(BASE_DIR / "prompts" / "main_prompt.md")
 
+question = input("Ingrese su consulta: ")
+
 completion = client.chat.completions.create(
         model="gpt-4o-mini",
         messages= [
@@ -23,9 +25,11 @@ completion = client.chat.completions.create(
             },
             {
                 "role": "user",
-                "content": "¿Cuanto tiempo tiene el cliente para arrepentirse de su compra?"
+                "content": question
             }
-        ]
+        ],
+        temperature = 0.2,
+        max_completion_tokens = 250
     )
 
 response = completion.choices[0].message.content
