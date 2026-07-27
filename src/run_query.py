@@ -8,14 +8,25 @@ def load_prompt(file_path):
     with open(file_path, "r", encoding="utf-8") as file:
         return file.read()
 
+def build_system_prompt(prompt, knowledge):
+    return f"""
+{prompt}
+
+=========================
+KNOWLEDGE BASE
+=========================
+
+{knowledge}
+"""
 
 
 client = create_cliente()
 
-system_prompt = load_prompt(BASE_DIR / "prompts" / "main_prompt.md")
+prompt = load_prompt(BASE_DIR / "prompts" / "main_prompt.md")
+knowledge = load_prompt(BASE_DIR / "data" / "knowledge_base.md")
+system_prompt = build_system_prompt(prompt, knowledge)
 
 question = input("Ingrese su consulta: ")
-
 completion = client.chat.completions.create(
         model="gpt-4o-mini",
         messages= [
