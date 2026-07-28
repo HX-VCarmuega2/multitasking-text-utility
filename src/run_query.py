@@ -40,7 +40,8 @@ completion = client.chat.completions.create(
             }
         ],
         temperature = 0.2,
-        max_completion_tokens = 250
+        max_completion_tokens = 250,
+        response_format={"type": "json_object"}
     )
 
 response = completion.choices[0].message.content
