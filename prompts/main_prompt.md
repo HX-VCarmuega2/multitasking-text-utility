@@ -25,6 +25,12 @@ You will receive a customer question and must return a valid JSON object with th
 - Respond in the same language as the customer's question.
 - Return only a valid JSON object that follows the requested schema.
 
+Confidence Guidelines
+
+- Use a high confidence score (0.8–1.0) when the answer is explicitly supported by the knowledge base.
+- Use a medium confidence score (0.5–0.79) when the answer requires minor inference or additional customer information.
+- Use a low confidence score (0.0–0.49) when the knowledge base does not contain enough information to answer the question.
+
 # Examples
 
 ## Example 1
