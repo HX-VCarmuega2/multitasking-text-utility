@@ -1,7 +1,5 @@
-from openai_client import create_cliente
+from openai_client import create_cliente, ask_question
 from pathlib import Path
-from datetime import datetime
-import time
 import json
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -22,41 +20,17 @@ KNOWLEDGE BASE
 {knowledge}
 """
 
-
-client = create_cliente()
-
 prompt = load_prompt(BASE_DIR / "prompts" / "main_prompt.md")
 knowledge = load_prompt(BASE_DIR / "data" / "knowledge_base.md")
 system_prompt = build_system_prompt(prompt, knowledge)
 
 question = input("Ingrese su consulta: ")
 
-timestamp = datetime.now().isoformat(timespec="seconds")
-start = time.perf_counter()
-
-completion = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages= [
-            {
-                "role": "system",
-                "content": system_prompt
-            },
-            {
-                "role": "user",
-                "content": question
-            }
-        ],
-        temperature = 0.2,
-        max_completion_tokens = 250,
-        response_format={"type": "json_object"}
-    )
-
-end = time.perf_counter()
+completion, latency, timestamp = ask_question(system_prompt, question)
 
 response_content = completion.choices[0].message.content
 response = json.loads(response_content)
 
-latency = round((end - start) * 1000 ) # Convert to milliseconds
 
 prompt_tokens = completion.usage.prompt_tokens
 completion_tokens = completion.usage.completion_tokens
@@ -79,4 +53,4 @@ response["metrics"] = {
     "estimated_cost_usd": total_cost
 }
 
-print(response)
+print(json.dumps(response, indent=2, ensure_ascii=False))
