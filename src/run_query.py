@@ -1,6 +1,6 @@
-from openai_client import ask_question
-from prompt_builder import create_system_prompt
-from metrics import build_metrics
+from src.openai_client import ask_question
+from src.prompt_builder import create_system_prompt
+from src.metrics import build_metrics
 import json
 
 def main():
