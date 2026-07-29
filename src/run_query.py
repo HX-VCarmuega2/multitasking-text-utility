@@ -1,6 +1,7 @@
 from src.openai_client import ask_question
 from src.prompt_builder import create_system_prompt
 from src.metrics import build_metrics
+from src.metrics import save_metrics
 import json
 
 def main():
@@ -11,13 +12,16 @@ def main():
     completion, latency, timestamp = ask_question(system_prompt, question)
 
     response_content = completion.choices[0].message.content
-    response = json.loads(response_content)
+    result = json.loads(response_content)
 
     metrics = build_metrics("gpt-4o-mini", completion, latency, timestamp)
 
-    response["metrics"] = metrics
+    result["question"] = question
+    result["metrics"] = metrics
 
-    print(json.dumps(response, indent=2, ensure_ascii=False))
+    save_metrics(result)
+
+    print(json.dumps(result, indent=2, ensure_ascii=False))
 
 if __name__ == "__main__":
     main()
