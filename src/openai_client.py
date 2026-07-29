@@ -2,7 +2,7 @@ import os
 from dotenv import load_dotenv
 from openai import OpenAI
 import time
-import datetime
+from datetime import datetime
 
 
 MODEL_NAME = "gpt-4o-mini"
