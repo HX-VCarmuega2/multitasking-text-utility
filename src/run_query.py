@@ -1,3 +1,4 @@
+from dbm import error
 import json
 
 from src.openai_client import MODEL_NAME, ask_question
@@ -16,24 +17,45 @@ def print_response(result):
 def main():
     system_prompt = create_system_prompt()
 
-    question = input("Ingrese su consulta: ")
+    question = input("Ingrese su consulta: ").strip()
 
     if not question:
         print("La consulta no puede estar vacía.")
+
+        
+    try:
+        completion, latency, timestamp = ask_question(system_prompt, question)
+    except Exception as e:
+        print(f"Error al realizar la consulta: {e}")
         return
 
-    completion, latency, timestamp = ask_question(system_prompt, question)
+    if not completion.choices:
+        print("Error: el modelo no devolvió ninguna respuesta.")
+        return
 
     response_content = completion.choices[0].message.content
-    result = json.loads(response_content)
+
+    if not response_content:
+        print("Error: la respuesta del modelo está vacía.")
+        return
+
+    try:
+        result = json.loads(response_content)
+    except json.JSONDecodeError:
+        print("Error: el modelo devolvió una respuesta JSON inválida.")
+        return
 
     metrics = build_metrics(MODEL_NAME, completion, latency, timestamp)
 
     result["question"] = question
     result["metrics"] = metrics
 
-    save_metrics(result)
     print_response(result)
+
+    try:
+        save_metrics(result)
+    except OSError as error:
+        print(f"Advertencia: no se pudieron guardar las métricas: {error}")
 
 if __name__ == "__main__":
     main()
