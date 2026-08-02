@@ -78,3 +78,14 @@ def build_output_text(result: dict) -> str:
         for part in text_parts
         if isinstance(part, str) and part.strip()
     )
+
+
+def check_moderation(moderation, text, description):
+    try:
+        return moderation.check(text)
+    except Exception as error:
+        print(
+            f"Advertencia: no se pudo verificar la {description} con moderación. "
+            f"Detalle: {error}"
+        )
+        return None

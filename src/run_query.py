@@ -3,7 +3,11 @@ import json
 from src.openai_client import MODEL_NAME, ask_question, create_client
 from src.prompt_builder import create_system_prompt
 from src.metrics import build_metrics, save_metrics
-from src.moderation import ModerationMiddleware, build_output_text
+from src.moderation import (
+    ModerationMiddleware,
+    build_output_text,
+    check_moderation,
+)
 
 def print_response(result):
     confidence = result["confidence"]
@@ -47,6 +51,7 @@ def print_response(result):
 
     print("\n" + "=" * 55)
 
+
 def main():
     client = create_client()
 
@@ -64,14 +69,11 @@ def main():
             print("La consulta no puede estar vacía.")
             return
 
-        try:
-            moderation_result = moderation.check(question)
-        except Exception as error:
-            print(
-                "Advertencia: no se pudo verificar la consulta con moderación. "
-                f"Detalle: {error}"
-            )
-            moderation_result = None
+        moderation_result = check_moderation(
+            moderation,
+            question,
+            description="consulta",
+        )
 
         if moderation_result is not None and not moderation_result.allowed:
             print("La consulta fue bloqueada por el sistema de moderación.")
@@ -101,14 +103,11 @@ def main():
 
         output_text = build_output_text(result)
 
-        try:
-            output_moderation_result = moderation.check(output_text)
-        except Exception as error:
-            print(
-                "Advertencia: no se pudo verificar la respuesta con moderación. "
-                f"Detalle: {error}"
-            )
-            output_moderation_result = None
+        output_moderation_result = check_moderation(
+            moderation,
+            output_text,
+            description="respuesta",
+        )
 
         if output_moderation_result is not None and not output_moderation_result.allowed:
             print("La respuesta fue bloqueada por el sistema de moderación.")
