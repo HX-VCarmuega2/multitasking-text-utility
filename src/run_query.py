@@ -52,13 +52,12 @@ def main():
 
     system_prompt = create_system_prompt()
 
+    moderation = ModerationMiddleware(
+        client=client,
+        threshold=0.70,
+    )
+
     while True:
-
-        moderation = ModerationMiddleware(
-            client=client,
-            threshold=0.70,
-        )
-
         question = input("Ingrese su consulta: ").strip()
 
         if not question:
