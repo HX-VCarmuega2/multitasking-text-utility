@@ -1,9 +1,9 @@
-from dbm import error
 import json
 
-from src.openai_client import MODEL_NAME, ask_question
+from src.openai_client import MODEL_NAME, ask_question, create_client
 from src.prompt_builder import create_system_prompt
 from src.metrics import build_metrics, save_metrics
+from src.moderation import ModerationMiddleware
 
 def print_response(result):
     console_output = {
@@ -15,16 +15,19 @@ def print_response(result):
     print(json.dumps(console_output, indent=2, ensure_ascii=False))
 
 def main():
+    client = create_client()
+
     system_prompt = create_system_prompt()
 
     question = input("Ingrese su consulta: ").strip()
 
     if not question:
         print("La consulta no puede estar vacía.")
+        return
 
         
     try:
-        completion, latency, timestamp = ask_question(system_prompt, question)
+        completion, latency, timestamp = ask_question(client, system_prompt, question)
     except Exception as e:
         print(f"Error al realizar la consulta: {e}")
         return

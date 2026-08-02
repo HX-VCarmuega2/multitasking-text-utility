@@ -23,9 +23,7 @@ def create_client():
     
     return client
 
-def ask_question(system_prompt, question):
-
-    client = create_client()
+def ask_question(client, system_prompt, question):
 
     timestamp = datetime.now().isoformat(timespec="seconds")
     start = time.perf_counter()
