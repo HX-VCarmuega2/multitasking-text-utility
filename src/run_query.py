@@ -64,9 +64,16 @@ def main():
             print("La consulta no puede estar vacía.")
             return
 
-        moderation_result = moderation.check(question)
+        try:
+            moderation_result = moderation.check(question)
+        except Exception as error:
+            print(
+                "Advertencia: no se pudo verificar la consulta con moderación. "
+                f"Detalle: {error}"
+            )
+            moderation_result = None
 
-        if not moderation_result.allowed:
+        if moderation_result is not None and not moderation_result.allowed:
             print("La consulta fue bloqueada por el sistema de moderación.")
             return
             
@@ -94,9 +101,16 @@ def main():
 
         output_text = build_output_text(result)
 
-        output_moderation_result = moderation.check(output_text)
+        try:
+            output_moderation_result = moderation.check(output_text)
+        except Exception as error:
+            print(
+                "Advertencia: no se pudo verificar la respuesta con moderación. "
+                f"Detalle: {error}"
+            )
+            output_moderation_result = None
 
-        if not output_moderation_result.allowed:
+        if output_moderation_result is not None and not output_moderation_result.allowed:
             print("La respuesta fue bloqueada por el sistema de moderación.")
             return
 
