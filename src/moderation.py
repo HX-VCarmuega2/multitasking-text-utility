@@ -55,3 +55,26 @@ class ModerationMiddleware:
                 else "The content exceeded the moderation threshold."
             ),
         )
+
+def build_output_text(result: dict) -> str:
+    """
+    Extracts the textual fields from the assistant response
+    that should be checked by the moderation model.
+    """
+
+    answer = result.get("answer", "")
+    actions = result.get("actions", [])
+
+    if not isinstance(actions, list):
+        actions = []
+
+    text_parts = [
+        answer,
+        *actions,
+    ]
+
+    return " ".join(
+        part.strip()
+        for part in text_parts
+        if isinstance(part, str) and part.strip()
+    )

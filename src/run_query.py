@@ -3,7 +3,7 @@ import json
 from src.openai_client import MODEL_NAME, ask_question, create_client
 from src.prompt_builder import create_system_prompt
 from src.metrics import build_metrics, save_metrics
-from src.moderation import ModerationMiddleware
+from src.moderation import ModerationMiddleware, build_output_text
 
 def print_response(result):
     confidence = result["confidence"]
@@ -91,6 +91,14 @@ def main():
             result = json.loads(response_content)
         except json.JSONDecodeError:
             print("Error: el modelo devolvió una respuesta JSON inválida.")
+            return
+
+        output_text = build_output_text(result)
+
+        output_moderation_result = moderation.check(output_text)
+
+        if not output_moderation_result.allowed:
+            print("La respuesta fue bloqueada por el sistema de moderación.")
             return
 
         metrics = build_metrics(MODEL_NAME, completion, latency, timestamp)
