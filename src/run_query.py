@@ -19,56 +19,66 @@ def main():
 
     system_prompt = create_system_prompt()
 
-    moderation = ModerationMiddleware(
-        client=client,
-        threshold=0.70,
-    )
+    while True:
 
-    question = input("Ingrese su consulta: ").strip()
+        moderation = ModerationMiddleware(
+            client=client,
+            threshold=0.70,
+        )
 
-    if not question:
-        print("La consulta no puede estar vacía.")
-        return
+        question = input("Ingrese su consulta: ").strip()
 
-    moderation_result = moderation.check(question)
+        if not question:
+            print("La consulta no puede estar vacía.")
+            return
 
-    if not moderation_result.allowed:
-        print("La consulta fue bloqueada por el sistema de moderación.")
-        return
-        
-    try:
-        completion, latency, timestamp = ask_question(client, system_prompt, question)
-    except Exception as e:
-        print(f"Error al realizar la consulta: {e}")
-        return
+        moderation_result = moderation.check(question)
 
-    if not completion.choices:
-        print("Error: el modelo no devolvió ninguna respuesta.")
-        return
+        if not moderation_result.allowed:
+            print("La consulta fue bloqueada por el sistema de moderación.")
+            return
+            
+        try:
+            completion, latency, timestamp = ask_question(client, system_prompt, question)
+        except Exception as e:
+            print(f"Error al realizar la consulta: {e}")
+            return
 
-    response_content = completion.choices[0].message.content
+        if not completion.choices:
+            print("Error: el modelo no devolvió ninguna respuesta.")
+            return
 
-    if not response_content:
-        print("Error: la respuesta del modelo está vacía.")
-        return
+        response_content = completion.choices[0].message.content
 
-    try:
-        result = json.loads(response_content)
-    except json.JSONDecodeError:
-        print("Error: el modelo devolvió una respuesta JSON inválida.")
-        return
+        if not response_content:
+            print("Error: la respuesta del modelo está vacía.")
+            return
 
-    metrics = build_metrics(MODEL_NAME, completion, latency, timestamp)
+        try:
+            result = json.loads(response_content)
+        except json.JSONDecodeError:
+            print("Error: el modelo devolvió una respuesta JSON inválida.")
+            return
 
-    result["question"] = question
-    result["metrics"] = metrics
+        metrics = build_metrics(MODEL_NAME, completion, latency, timestamp)
 
-    print_response(result)
+        result["question"] = question
+        result["metrics"] = metrics
 
-    try:
-        save_metrics(result)
-    except OSError as error:
-        print(f"Advertencia: no se pudieron guardar las métricas: {error}")
+        print_response(result)
+
+        try:
+            save_metrics(result)
+        except OSError as error:
+            print(f"Advertencia: no se pudieron guardar las métricas: {error}")
+
+        another_query = input(
+            "\n¿Desea realizar otra consulta? (s/n): "
+        ).strip().lower()
+
+        if another_query not in ["s", "si", "sí"]:
+            print("Programa finalizado.")
+            break
 
 if __name__ == "__main__":
     main()
