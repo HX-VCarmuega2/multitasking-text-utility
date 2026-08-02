@@ -19,12 +19,22 @@ def main():
 
     system_prompt = create_system_prompt()
 
+    moderation = ModerationMiddleware(
+        client=client,
+        threshold=0.70,
+    )
+
     question = input("Ingrese su consulta: ").strip()
 
     if not question:
         print("La consulta no puede estar vacía.")
         return
 
+    moderation_result = moderation.check(question)
+
+    if not moderation_result.allowed:
+        print("La consulta fue bloqueada por el sistema de moderación.")
+        return
         
     try:
         completion, latency, timestamp = ask_question(client, system_prompt, question)
