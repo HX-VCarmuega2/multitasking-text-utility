@@ -6,13 +6,46 @@ from src.metrics import build_metrics, save_metrics
 from src.moderation import ModerationMiddleware
 
 def print_response(result):
-    console_output = {
-        "answer": result["answer"],
-        "confidence": result["confidence"],
-        "actions": result["actions"],
-    }
+    confidence = result["confidence"]
+    confidence_percent = round(confidence * 100)
 
-    print(json.dumps(console_output, indent=2, ensure_ascii=False))
+    if confidence >= 0.8:
+        confidence_label = "Alta"
+        confidence_icon = "🟢"
+    elif confidence >= 0.5:
+        confidence_label = "Media"
+        confidence_icon = "🟡"
+    else:
+        confidence_label = "Baja"
+        confidence_icon = "🔴"
+
+    print("\n" + "=" * 55)
+    print("🤖 ASISTENTE DE SOPORTE")
+    print("=" * 55)
+
+    print("\n📝 Respuesta")
+    print("-" * 55)
+    print(result["answer"])
+
+    print("\n📊 Confianza")
+    print("-" * 55)
+    print(
+        f"{confidence_icon} {confidence_label} "
+        f"({confidence_percent}%)"
+    )
+
+    print("\n💡 Acciones recomendadas")
+    print("-" * 55)
+
+    actions = result["actions"]
+
+    if actions:
+        for action in actions:
+            print(f"• {action}")
+    else:
+        print("• No se recomendaron acciones adicionales.")
+
+    print("\n" + "=" * 55)
 
 def main():
     client = create_client()
