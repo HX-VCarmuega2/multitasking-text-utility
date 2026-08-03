@@ -1,9 +1,9 @@
 # Multitasking Text Utility
 
-![Python](https://img.shields.io/badge/Python-3.13-3776AB?logo=python&logoColor=white)
-![OpenAI](https://img.shields.io/badge/OpenAI-API-412991?logo=openai&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3.13-3776AB?logo=python\&logoColor=white)
+![OpenAI](https://img.shields.io/badge/OpenAI-API-412991?logo=openai\&logoColor=white)
 ![Model](https://img.shields.io/badge/Model-gpt--4o--mini-orange)
-![Pytest](https://img.shields.io/badge/Pytest-9.1.1-0A9EDC?logo=pytest&logoColor=white)
+![Pytest](https://img.shields.io/badge/Pytest-9.1.1-0A9EDC?logo=pytest\&logoColor=white)
 
 > An AI-powered assistant that helps customer support agents answer common questions using a business-specific knowledge base.
 
@@ -12,6 +12,8 @@
 This project simulates an AI-powered customer support assistant for an online learning platform.
 
 The application helps customer support agents answer customer questions more efficiently. It receives a question from the user, sends it to the OpenAI Chat Completions API together with a structured prompt and a business-specific knowledge base, and returns a concise, structured response containing an answer, a confidence score, and suggested follow-up actions.
+
+To improve safety, the application also includes an input and output moderation layer that blocks unsafe requests and responses before they reach the language model or the end user.
 
 The knowledge base can be easily customized to adapt the application to different businesses.
 
@@ -36,20 +38,37 @@ The assistant is designed to answer questions related to this knowledge base. An
 * Answer customer support questions using the OpenAI Chat Completions API.
 * Generate structured AI responses in JSON format.
 * Use a customizable business knowledge base.
+* Moderate both user input and AI output to improve safety.
 * Measure API latency and token usage.
 * Estimate the cost of each request.
 * Save execution metrics to a CSV file.
+* Support multiple queries during the same session.
 * Include unit tests for the core application logic.
 
 ## Project Structure
 
 ```text
-data/       Business knowledge base.
-metrics/    CSV files containing execution metrics.
-prompts/    Prompt templates used by the model.
-reports/    Project documentation and implementation report.
-src/        Application source code.
-tests/      Unit tests.
+data/
+│── knowledge.md              Business knowledge base.
+
+metrics/
+│── metrics.csv               Execution metrics.
+
+prompts/
+│── main_prompt.md            Prompt template.
+
+reports/
+│── PI_report_en.md           Project report.
+
+src/
+│── openai_client.py          OpenAI API communication.
+│── prompt_builder.py         Prompt construction.
+│── metrics.py                Metrics calculation and persistence.
+│── moderation.py             Input and output moderation.
+│── run_query.py              Main application workflow.
+
+tests/
+│── test_core.py              Unit tests.
 ```
 
 ## Technologies
