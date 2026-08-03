@@ -85,7 +85,7 @@ def check_moderation(moderation, text, description):
         return moderation.check(text)
     except Exception as error:
         print(
-            f"Advertencia: no se pudo verificar la {description} con moderación. "
-            f"Detalle: {error}"
+            f"Warning: the {description} could not be checked with moderation. "
+            f"Details: {error}"
         )
         return None

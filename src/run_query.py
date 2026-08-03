@@ -14,31 +14,31 @@ def print_response(result):
     confidence_percent = round(confidence * 100)
 
     if confidence >= 0.8:
-        confidence_label = "Alta"
+        confidence_label = "High"
         confidence_icon = "🟢"
     elif confidence >= 0.5:
-        confidence_label = "Media"
+        confidence_label = "Medium"
         confidence_icon = "🟡"
     else:
-        confidence_label = "Baja"
+        confidence_label = "Low"
         confidence_icon = "🔴"
 
     print("\n" + "=" * 55)
-    print("🤖 ASISTENTE DE SOPORTE")
+    print("🤖 SUPPORT ASSISTANT")
     print("=" * 55)
 
-    print("\n📝 Respuesta")
+    print("\n📝 Answer")
     print("-" * 55)
     print(result["answer"])
 
-    print("\n📊 Confianza")
+    print("\n📊 Confidence")
     print("-" * 55)
     print(
         f"{confidence_icon} {confidence_label} "
         f"({confidence_percent}%)"
     )
 
-    print("\n💡 Acciones recomendadas")
+    print("\n💡 Recommended actions")
     print("-" * 55)
 
     actions = result["actions"]
@@ -47,7 +47,7 @@ def print_response(result):
         for action in actions:
             print(f"• {action}")
     else:
-        print("• No se recomendaron acciones adicionales.")
+        print("• No additional actions were recommended.")
 
     print("\n" + "=" * 55)
 
@@ -63,42 +63,42 @@ def main():
     )
 
     while True:
-        question = input("Ingrese su consulta: ").strip()
+        question = input("Enter your query: ").strip()
 
         if not question:
-            print("La consulta no puede estar vacía.")
+            print("The query cannot be empty.")
             return
 
         moderation_result = check_moderation(
             moderation,
             question,
-            description="consulta",
+            description="query",
         )
 
         if moderation_result is not None and not moderation_result.allowed:
-            print("La consulta fue bloqueada por el sistema de moderación.")
+            print("The query was blocked by the moderation system.")
             return
-            
+
         try:
             completion, latency, timestamp = ask_question(client, system_prompt, question)
         except Exception as e:
-            print(f"Error al realizar la consulta: {e}")
+            print(f"Error while processing the query: {e}")
             return
 
         if not completion.choices:
-            print("Error: el modelo no devolvió ninguna respuesta.")
+            print("Error: the model did not return any response.")
             return
 
         response_content = completion.choices[0].message.content
 
         if not response_content:
-            print("Error: la respuesta del modelo está vacía.")
+            print("Error: the model response is empty.")
             return
 
         try:
             result = json.loads(response_content)
         except json.JSONDecodeError:
-            print("Error: el modelo devolvió una respuesta JSON inválida.")
+            print("Error: the model returned an invalid JSON response.")
             return
 
         output_text = build_output_text(result)
@@ -106,11 +106,11 @@ def main():
         output_moderation_result = check_moderation(
             moderation,
             output_text,
-            description="respuesta",
+            description="response",
         )
 
         if output_moderation_result is not None and not output_moderation_result.allowed:
-            print("La respuesta fue bloqueada por el sistema de moderación.")
+            print("The response was blocked by the moderation system.")
             return
 
         metrics = build_metrics(MODEL_NAME, completion, latency, timestamp)
@@ -123,14 +123,14 @@ def main():
         try:
             save_metrics(result)
         except OSError as error:
-            print(f"Advertencia: no se pudieron guardar las métricas: {error}")
+            print(f"Warning: metrics could not be saved: {error}")
 
         another_query = input(
-            "\n¿Desea realizar otra consulta? (s/n): "
+            "\nWould you like to make another query? (y/n): "
         ).strip().lower()
 
-        if another_query not in ["s", "si", "sí"]:
-            print("Programa finalizado.")
+        if another_query not in ["y", "yes"]:
+            print("Program finished.")
             break
 
 if __name__ == "__main__":

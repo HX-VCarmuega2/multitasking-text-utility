@@ -18,8 +18,8 @@ def test_calculate_cost():
 
 def test_build_csv_row():
     result = {
-        "question": "¿Cómo restablezco mi contraseña?",
-        "answer": "Podés restablecerla desde la pantalla de inicio de sesión.",
+        "question": "How do I reset my password?",
+        "answer": "You can reset it from the login screen.",
         "confidence": 0.95,
         "actions": [
             "Open the login screen",
@@ -38,7 +38,7 @@ def test_build_csv_row():
 
     csv_row = build_csv_row(result)
 
-    assert csv_row["question"] == "¿Cómo restablezco mi contraseña?"
+    assert csv_row["question"] == "How do I reset my password?"
     assert csv_row["confidence"] == 0.95
     assert csv_row["actions"] == (
         "Open the login screen | Select forgot password"
